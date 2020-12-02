@@ -6,18 +6,16 @@ using namespace std;
 // I have a file called namegenerator.cpp which has functions randname() and randlast() which generate a first and last name (char array) in slightly different ways.
 //prototypes:
 int hashfunction(int);
-void add(Student*);
-void del(int);
-void print();
-//init hash table
+void add(Student*, Student ** &hashtable);
+void del(int, Student ** &hashtable);
+void print(Student ** hashtable);
 int size = 100;
-Student* hashtable[100];
 // You can hash just using ID % size, but this seems like cheating...
 int hashfunction(int ID){
 	return ID % size;
 };
 // Add: takes in student, gets hash, goes to that spot in the table, goes down the linked list and puts the new student at the end.
-void add(Student * stud){
+void add(Student * stud, Student ** &hashtable){
 	int spot = hashfunction(stud->ID);
 	Student * current = hashtable[spot];
 	if(current == NULL){
@@ -33,7 +31,7 @@ void add(Student * stud){
 	}
 };
 // Delete: basically does the same thing as add, except when it gets to stud it makes the chain go around it and then removes it. It removes every student with that ID.
-void del(int ID){
+void del(int ID, Student ** &hashtable){
 	int spot = hashfunction(ID);
 	Student * current = hashtable[spot];
 	if(current == NULL){
@@ -56,7 +54,7 @@ void del(int ID){
 	}
 	}
 };
-void print(){
+void print(Student ** hashtable){
 	for(int i = 0; i < size; i++){
 		Student * current = hashtable[i];
 		while(current != NULL){
@@ -66,6 +64,8 @@ void print(){
 	};
 };
 int main(){
+	//init hash table
+	Student** hashtable = new Student * [100];
 	//enter loop
 	bool quit = false;
 	while(quit == false){
@@ -90,16 +90,16 @@ int main(){
 		newstud->last = l;
 		newstud->ID = ID;
 		newstud->GPA = GPA;
-		add(newstud);
+		add(newstud, hashtable);
 	}
 	else if(response == 'D'){
 		cout << "ID: ";
 		int ID;
 		cin >> ID;
-		del(ID);
+		del(ID,hashtable);
 	}
 	else if(response == 'P'){
-		print();
+		print(hashtable);
 	}
 	else if(response == 'R'){
 		cout << "How many students should I generate? ";
@@ -109,13 +109,13 @@ int main(){
 			string first = randname();
 			string last = randlast();
 			int ID = i+1;
-			double GPA = 4 * (rand() / RAND_MAX);
+			double GPA = 4 * ((double) rand() / RAND_MAX);
 			Student * newstud = new Student();
 			newstud->first = first;
 			newstud->last = last;
 			newstud->ID = ID;
 			newstud->GPA = GPA;
-			add(newstud);
+			add(newstud, hashtable);
 		};
 	}
 	else quit = true;
